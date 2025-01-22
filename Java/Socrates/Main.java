@@ -5,7 +5,14 @@ class Animal {
     protected String color;
     protected int legNumber;
 
+    // Constructor with validations
     public Animal(String color, int legNumber) {
+        if (color == null || color.trim().isEmpty()) {
+            throw new IllegalArgumentException("Color cannot be null or empty.");
+        }
+        if (legNumber <= 0 || legNumber > 100) { // Arbitrary maximum limit for sanity
+            throw new IllegalArgumentException("Leg number must be between 1 and 100.");
+        }
         this.color = color;
         this.legNumber = legNumber;
     }
@@ -25,7 +32,10 @@ class Cat extends Animal {
 // Bug class extending Animal
 class Bug extends Animal {
     public Bug(String color, int legNumber) {
-        super(color, legNumber); 
+        super(color, legNumber);
+        if (legNumber < 6 || legNumber % 2 != 0) { 
+            throw new IllegalArgumentException("Bugs must have at least 6 legs and an even number of legs.");
+        }
     }
 
     public String move() {
@@ -43,28 +53,31 @@ class Bird extends Animal {
     }
 
     public String move() {
-        if (canFly) {
-            return "I'm flying";
-        } else {
-            return "I'm moving with " + legNumber + " legs!";
-        }
+        return canFly ? "I'm flying!" : "I'm moving with " + legNumber + " legs!";
     }
 }
 
 // Main class to test functionality
 public class Main {
     public static void main(String[] args) {
-        // Create instances of each class
-        Cat cat = new Cat("Black");
-        Bug bug = new Bug("Green", 6);
-        Bird birdFlying = new Bird("Blue", true);
-        Bird birdWalking = new Bird("Brown", false);
+        try {
+            // Valid examples
+            Cat cat = new Cat("Black");
+            Bug bug = new Bug("Green", 6);
+            Bird birdFlying = new Bird("Blue", true);
+            Bird birdWalking = new Bird("Brown", false);
 
-        // Test the move method
-        System.out.println(cat.move());
-        System.out.println(bug.move()); 
-        System.out.println(birdFlying.move()); 
-        System.out.println(birdWalking.move()); 
+            System.out.println(cat.move());
+            System.out.println(bug.move());
+            System.out.println(birdFlying.move());
+            System.out.println(birdWalking.move());
+
+            
+            // Cat invalidCat = new Cat(""); // Invalid color
+            // Bug invalidBug = new Bug("Red", 5); // Invalid leg number
+            // Bird invalidBird = new Bird(null, true); // Null color
+        } catch (IllegalArgumentException e) {
+            System.err.println("Error: " + e.getMessage());
+        }
     }
 }
-
