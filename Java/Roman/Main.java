@@ -4,8 +4,38 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Main {
+    // Validation method for Roman numerals
+    public static boolean isValidRoman(String s) {
+        if (s == null || s.trim().isEmpty()) {
+            return false; // Null or empty strings are invalid
+        }
+
+        // Rule 1: Limit consecutive repetitions
+        if (s.contains("IIII") || s.contains("XXXX") || s.contains("CCCC") || s.contains("MMMM")) {
+            return false;
+        }
+
+        // Rule 2: Prevent repetition of V, L, D
+        if (s.contains("VV") || s.contains("LL") || s.contains("DD")) {
+            return false;
+        }
+
+        // Rule 3: Check invalid subtraction patterns
+        // Only valid substractive pairs are: IV, IX, XL, XC, CD, CM
+        if (s.matches(".*IL|IC|ID|IM|VX|VL|VC|VM|LC|LD|LM|DM.*")) {
+            return false;
+        }
+
+        return true; // Passes all validation rules
+    }
+
+    // Conversion method
     public static int romanToInt(String s) {
-        // Create a map for Roman numeral values
+        if (!isValidRoman(s)) {
+            throw new IllegalArgumentException("Invalid Roman numeral: " + s);
+        }
+
+        // Roman numeral map
         Map<Character, Integer> romanMap = new HashMap<>();
         romanMap.put('I', 1);
         romanMap.put('V', 5);
@@ -18,20 +48,18 @@ public class Main {
         int result = 0;
         int prevValue = 0;
 
-        // Iterate through the string from right to left
+        // Process Roman numeral from right to left
         for (int i = s.length() - 1; i >= 0; i--) {
             char currentChar = s.charAt(i);
             int currentValue = romanMap.get(currentChar);
 
-            // If the current value is less than the previous value, subtract it
+            // Subtract if smaller, else add
             if (currentValue < prevValue) {
                 result -= currentValue;
             } else {
-                // Otherwise, add it
                 result += currentValue;
             }
 
-            // Update previous value
             prevValue = currentValue;
         }
 
@@ -39,10 +67,18 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        // Test cases
-        System.out.println("III -> " + romanToInt("III"));          // Output: 3
-        System.out.println("LVIII -> " + romanToInt("LVIII"));      // Output: 58
-        System.out.println("MCMXCIV -> " + romanToInt("MCMXCIV"));  // Output: 1994
-        
+        try {
+            // Valid test cases
+            System.out.println("III -> " + romanToInt("III"));         // 3
+            System.out.println("LVIII -> " + romanToInt("LVIII"));     // 58
+            System.out.println("MCMXCIV -> " + romanToInt("MCMXCIV")); // 1994
+
+            
+            //System.out.println("IIII -> " + romanToInt("IIII"));   // Invalid
+            // System.out.println("IC -> " + romanToInt("IC"));       // Invalid
+            // System.out.println("VV -> " + romanToInt("VV"));       // Invalid
+        } catch (IllegalArgumentException e) {
+            System.err.println("Error: " + e.getMessage());
+        }
     }
 }
